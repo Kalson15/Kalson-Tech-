@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Console greeting
     console.log('Kalson Tech - System Online.');
 
-    // Configure Marked.js for Code Highlighting
     if (typeof marked !== 'undefined') {
         const renderer = new marked.Renderer();
         renderer.code = function(code, language) {
@@ -19,10 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         marked.use({ renderer });
     }
 
-    // Check Authentication State on Load
     checkAuth();
-
-    // Initialize UI Interactions
     initScrollAnimations();
     initAuthModal();
     initSettingsModal();
@@ -30,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initChatInterface();
 });
 
-// --- AUTHENTICATION LOGIC (SIMULATED BACKEND) ---
 const USERS_KEY = 'kalson_users';
 const SESSION_KEY = 'kalson_session';
 
@@ -43,14 +37,12 @@ function checkAuth() {
 
     if (session) {
         try {
-            // User is logged in
             const user = JSON.parse(session);
             console.log('User logged in:', user.email);
             
             landingView.classList.add('hidden');
             dashboardView.classList.remove('hidden');
             
-            // Update Profile Info
             const displayUserName = document.getElementById('displayUserName');
             if(displayUserName) displayUserName.textContent = user.name;
         } catch (e) {
@@ -60,7 +52,6 @@ function checkAuth() {
             dashboardView.classList.add('hidden');
         }
     } else {
-        // User is guest
         landingView.classList.remove('hidden');
         dashboardView.classList.add('hidden');
     }
@@ -75,7 +66,6 @@ function handleSignup(name, email, password) {
         users = [];
     }
     
-    // Simple check if user exists
     if (users.find(u => u.email === email)) {
         showToast('Email already registered!', 'error');
         return false;
@@ -85,7 +75,6 @@ function handleSignup(name, email, password) {
     users.push(newUser);
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
     
-    // Auto login after signup
     localStorage.setItem(SESSION_KEY, JSON.stringify({ name, email }));
     showToast('Account created successfully!');
     return true;
@@ -127,7 +116,30 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.classList.add('hidden'), 3000);
 }
 
-// --- UI & INTERACTION LOGIC ---
+function initScrollAnimations() {
+    // Add any scroll animations here
+}
+
+function initMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (mobileMenu && navMenu) {
+        mobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.toggle('is-active');
+            navMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (navMenu.classList.contains('active') && 
+                !navMenu.contains(e.target) && 
+                !mobileMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+                mobileMenu.classList.remove('is-active');
+            }
+        });
+    }
+}
 
 function initAuthModal() {
     const modal = document.getElementById('authModal');
@@ -141,7 +153,6 @@ function initAuthModal() {
     const signupForm = document.getElementById('signupForm');
     const loginForm = document.getElementById('loginForm');
 
-    // Ensure forms are in correct state
     const resetForms = (isLogin = false) => {
         if (!signupForm || !loginForm) return;
         if (isLogin) {
@@ -157,7 +168,6 @@ function initAuthModal() {
         resetForms(showLoginView);
         modal.classList.remove('hidden');
         modal.style.display = "flex";
-        // Force reflow to ensure transition happens
         void modal.offsetWidth;
         setTimeout(() => modal.classList.add('show'), 10);
     };
@@ -172,14 +182,14 @@ function initAuthModal() {
     if (exploreBtn) {
         exploreBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            openModal(false); // Open Signup
+            openModal(false);
         });
     }
 
     if (navLoginBtn) {
         navLoginBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            openModal(true); // Open Login
+            openModal(true);
         });
     }
 
@@ -215,7 +225,7 @@ function initAuthModal() {
                 if(handleSignup(nameInput.value, emailInput.value, passInput.value)) {
                     closeModal();
                     checkAuth();
-                }র্শ
+                }
             }
         });
     }
@@ -241,23 +251,13 @@ function initSettingsModal() {
     const modal = document.getElementById('settingsModal');
     const openBtn = document.getElementById('openSettingsBtn');
     const closeBtn = document.getElementById('closeSettings');
-    const apiKeyForm = document.getElementById('apiKeyForm');
-    const apiKeyInput = document.getElementById('geminiKey');
 
     if (!modal) return;
 
-    // Load saved key
-    if(apiKeyInput) {
-        const savedKey = localStorage.getItem('kalson_gemini_api_key');
-        if(savedKey) apiKeyInput.value = savedKey;
+    // Hide the settings button since we don't need API key input anymore
+    if (openBtn) {
+        openBtn.style.display = 'none';
     }
-
-    const openModal = () => {
-        modal.classList.remove('hidden');
-        modal.style.display = "flex";
-        void modal.offsetWidth;
-        setTimeout(() => modal.classList.add('show'), 10);
-    };
 
     const closeModal = () => {
         modal.classList.remove('show');
@@ -266,33 +266,12 @@ function initSettingsModal() {
         }, 300);
     };
 
-    if(openBtn) openBtn.addEventListener('click', openModal);
     if(closeBtn) closeBtn.addEventListener('click', closeModal);
 
     window.addEventListener('click', (event) => {
         if (event.target === modal) closeModal();
     });
-
-    if(apiKeyForm) {
-        apiKeyForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if(apiKeyInput) {
-                const key = apiKeyInput.value.trim();
-                if(key) {
-                    localStorage.setItem('kalson_gemini_api_key', key);
-                    showToast('Gemini API Key saved successfully!');
-                    closeModal();
-                } else {
-                    localStorage.removeItem('kalson_gemini_api_key');
-                    showToast('API Key removed.', 'error');
-                    closeModal();
-                }
-            }
-        });
-    }
 }
-
-// --- CHAT LOGIC ---
 
 let currentChatId = null;
 
@@ -306,21 +285,18 @@ function initChatInterface() {
     const newChatBtn = document.getElementById('newChatBtn');
     const historyList = document.getElementById('chatHistoryList');
 
-    // Load History to Sidebar
     loadChatHistory();
 
     if(newChatBtn) {
         newChatBtn.addEventListener('click', () => {
             currentChatId = null;
             clearMessages();
-            // Remove active class from sidebar items
             if(historyList) {
                 historyList.querySelectorAll('li').forEach(li => li.classList.remove('active'));
             }
         });
     }
 
-    // Improved Mobile Sidebar Toggle with Animation
     const chatMobileMenu = document.getElementById('chatMobileMenu');
     const sidebar = document.querySelector('.sidebar');
     
@@ -340,10 +316,8 @@ function initChatInterface() {
         });
     }
 
-    // Event delegation for dynamic buttons (Copy Code, Actions)
     if (messagesContainer) {
         messagesContainer.addEventListener('click', (e) => {
-            // Copy Code Block
             if (e.target.closest('.copy-code-btn')) {
                 const btn = e.target.closest('.copy-code-btn');
                 const code = decodeURIComponent(btn.dataset.code);
@@ -354,21 +328,17 @@ function initChatInterface() {
                 });
             }
             
-            // Copy Message Text
             if (e.target.closest('.copy-msg-btn')) {
                 const btn = e.target.closest('.copy-msg-btn');
                 const messageContent = btn.closest('.message').querySelector('.message-content').innerText;
-                // Remove artifacts like "Copy" from code blocks for clean text
                 const cleanText = messageContent.replace(/code\s+Copy/g, '');
                 navigator.clipboard.writeText(cleanText).then(() => {
                    showToast('Message copied to clipboard');
                 });
             }
 
-            // Regenerate Response
             if (e.target.closest('.regen-msg-btn')) {
                 const aiMsg = e.target.closest('.message');
-                // Find the preceding user message
                 let prevSibling = aiMsg.previousElementSibling;
                 while(prevSibling && !prevSibling.classList.contains('user-message')) {
                     prevSibling = prevSibling.previousElementSibling;
@@ -376,8 +346,8 @@ function initChatInterface() {
                 
                 if (prevSibling) {
                     const userText = prevSibling.querySelector('.message-content p').textContent;
-                    aiMsg.remove(); // Remove failed/old response
-                    processMessage(userText, true); // Resend
+                    aiMsg.remove();
+                    processMessage(userText, true);
                 }
             }
         });
@@ -386,7 +356,6 @@ function initChatInterface() {
     const processMessage = async (text, isRegen = false) => {
         if (!text) return;
         
-        // Disable Input
         if (sendBtn) sendBtn.disabled = true;
         if (chatInput) chatInput.disabled = true;
 
@@ -395,7 +364,6 @@ function initChatInterface() {
             if(chatInput) chatInput.value = '';
         }
 
-        // Create AI Message placeholder
         const aiMsgElement = addMessage('', 'ai');
         const aiContentDiv = aiMsgElement.querySelector('.message-content');
         const p = document.createElement('p');
@@ -405,18 +373,15 @@ function initChatInterface() {
         try {
             const responseText = await fetchRealTimeResponse(text);
             
-            // Process Markdown and Code
             p.classList.remove('typing-cursor');
             
             if (typeof marked !== 'undefined') {
                 aiContentDiv.innerHTML = marked.parse(responseText);
             } else {
-                // Fallback if marked didn't load
                 p.textContent = responseText;
                 aiContentDiv.innerHTML = linkify(responseText);
             }
             
-            // Add Actions (Copy / Regenerate)
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'message-actions';
             actionsDiv.innerHTML = `
@@ -425,14 +390,12 @@ function initChatInterface() {
             `;
             aiMsgElement.querySelector('.message-content').appendChild(actionsDiv);
 
-            // Save to History
             saveToHistory(text, responseText);
 
         } catch (error) {
-            p.textContent = "I'm having trouble connecting to the network right now.";
+            p.textContent = "I'm having trouble connecting right now. Please try again.";
             p.classList.remove('typing-cursor');
         } finally {
-            // Re-enable Input
             if (sendBtn) sendBtn.disabled = false;
             if (chatInput) {
                 chatInput.disabled = false;
@@ -464,7 +427,6 @@ function initChatInterface() {
         const content = document.createElement('div');
         content.classList.add('message-content');
         
-        // User message is plain text, AI uses markdown (processed later)
         if (sender === 'user') {
             content.innerHTML = `<p>${text}</p>`;
         }
@@ -479,7 +441,6 @@ function initChatInterface() {
 
     function clearMessages() {
         if (!messagesContainer) return;
-        // Keep only the welcome message or remove all
         messagesContainer.innerHTML = `
             <div class="message ai-message">
                 <div class="message-avatar"><i class="fas fa-robot"></i></div>
@@ -489,52 +450,31 @@ function initChatInterface() {
             </div>`;
     }
 
-    // API Function
+    // UPDATED: Use serverless function instead of direct API call
     async function fetchRealTimeResponse(userQuery) {
-        const apiKey = localStorage.getItem('kalson_gemini_api_key');
-        
-        if (!apiKey) {
-            return "Please configure your Gemini API Key in Settings to start coding with AI assistance.";
-        }
-
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch('/api/chat', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    "contents": [{
-                        "parts": [{
-                            "text": "You are Kalson Tech AI, an expert coding assistant. Use Markdown for code blocks.\n\nUser: " + userQuery
-                        }]
-                    }],
-                    "generationConfig": {
-                        "temperature": 0.7,
-                        "topK": 40,
-                        "topP": 0.95,
-                        "maxOutputTokens": 2048
-                    }
-                })
+                body: JSON.stringify({ userQuery })
             });
 
-            if (!response.ok) throw new Error('API request failed');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
+            }
 
             const data = await response.json();
+            return data.response || "No response generated. Please try again.";
             
-            if (data.candidates && data.candidates.length > 0 && 
-                data.candidates[0].content && 
-                data.candidates[0].content.parts.length > 0) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                return "No response generated. Please try again.";
-            }
         } catch (e) {
-            return `Error: ${e.message}. Please check your connection.`;
+            console.error('Fetch error:', e);
+            return `Error: ${e.message}. Please check your connection and try again.`;
         }
     }
 
-    // Linkify helper
     function linkify(text) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return text.replace(urlRegex, function(url) {
@@ -543,10 +483,9 @@ function initChatInterface() {
     }
 }
 
-// --- HISTORY MANAGEMENT ---
 function getHistoryKey() {
-    const session = JSON.parse(localStorage.getItem(SESSION_KEY));
-    return session ? `kalson_chats_${session.email}` : null;
+    const session = localStorage.getItem(SESSION_KEY);
+    return session ? `kalson_chats_${JSON.parse(session).email}` : null;
 }
 
 function loadChatHistory() {
@@ -565,152 +504,65 @@ function loadChatHistory() {
             return;
         }
 
-        chats.reverse().forEach(chat => {
+        chats.reverse().slice(0, 10).forEach((chat, idx) => {
             const li = document.createElement('li');
-            li.innerHTML = `<i class="far fa-comment-alt"></i> ${chat.title}`;
-            li.onclick = () => loadChat(chat.id);
-            if (chat.id === currentChatId) li.classList.add('active');
+            const preview = chat.userMsg.substring(0, 30) + (chat.userMsg.length > 30 ? '...' : '');
+            li.innerHTML = `<i class="fas fa-comment"></i> ${preview}`;
+            li.addEventListener('click', () => {
+                loadChat(chat);
+                historyList.querySelectorAll('li').forEach(item => item.classList.remove('active'));
+                li.classList.add('active');
+            });
             historyList.appendChild(li);
         });
     } catch (e) {
-        console.error('Error loading history', e);
+        console.error('Error loading history:', e);
     }
 }
 
-function saveToHistory(userText, aiText) {
+function saveToHistory(userMsg, aiMsg) {
     const key = getHistoryKey();
     if (!key) return;
 
-    let chats = [];
     try {
-        chats = JSON.parse(localStorage.getItem(key) || '[]');
-    } catch (e) {}
-
-    const timestamp = Date.now();
-    
-    if (!currentChatId) {
-        // New Chat
-        currentChatId = timestamp.toString();
-        const newChat = {
-            id: currentChatId,
-            title: userText.substring(0, 30) + (userText.length > 30 ? '...' : ''),
-            messages: [
-                { role: 'user', content: userText },
-                { role: 'ai', content: aiText }
-            ],
-            lastUpdated: timestamp
-        };
-        chats.push(newChat);
-    } else {
-        // Existing Chat
-        const chatIndex = chats.findIndex(c => c.id === currentChatId);
-        if (chatIndex !== -1) {
-            chats[chatIndex].messages.push({ role: 'user', content: userText });
-            chats[chatIndex].messages.push({ role: 'ai', content: aiText });
-            chats[chatIndex].lastUpdated = timestamp;
-        } else {
-            // Fallback if ID not found
-            currentChatId = timestamp.toString();
-            chats.push({
-                id: currentChatId,
-                title: userText.substring(0, 30) + '...',
-                messages: [{ role: 'user', content: userText }, { role: 'ai', content: aiText }],
-                lastUpdated: timestamp
-            });
-        }
-    }
-
-    localStorage.setItem(key, JSON.stringify(chats));
-    loadChatHistory();
-}
-
-function loadChat(chatId) {
-    const key = getHistoryKey();
-    if (!key) return;
-    
-    const chats = JSON.parse(localStorage.getItem(key) || '[]');
-    const chat = chats.find(c => c.id === chatId);
-    
-    if (chat) {
-        currentChatId = chatId;
-        const messagesContainer = document.getElementById('messagesContainer');
-        messagesContainer.innerHTML = '';
-        
-        // Re-render messages
-        chat.messages.forEach(msg => {
-            const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message', msg.role === 'user' ? 'user-message' : 'ai-message');
-            
-            const avatar = document.createElement('div');
-            avatar.classList.add('message-avatar');
-            avatar.innerHTML = msg.role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
-            
-            const content = document.createElement('div');
-            content.classList.add('message-content');
-            
-            if (msg.role === 'user') {
-                content.innerHTML = `<p>${msg.content}</p>`;
-            } else {
-                 if (typeof marked !== 'undefined') {
-                    content.innerHTML = marked.parse(msg.content);
-                } else {
-                    content.innerHTML = `<p>${msg.content}</p>`;
-                }
-                // Add Actions
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'message-actions';
-                actionsDiv.innerHTML = `
-                    <button class="action-btn copy-msg-btn" title="Copy Message"><i class="far fa-copy"></i></button>
-                    <button class="action-btn regen-msg-btn" title="Regenerate Response"><i class="fas fa-redo-alt"></i></button>
-                `;
-                content.appendChild(actionsDiv);
-            }
-
-            msgDiv.appendChild(avatar);
-            msgDiv.appendChild(content);
-            messagesContainer.appendChild(msgDiv);
-        });
-        
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Update active state in sidebar
+        let chats = JSON.parse(localStorage.getItem(key) || '[]');
+        chats.push({ userMsg, aiMsg, timestamp: Date.now() });
+        if (chats.length > 50) chats = chats.slice(-50);
+        localStorage.setItem(key, JSON.stringify(chats));
         loadChatHistory();
+    } catch (e) {
+        console.error('Error saving to history:', e);
     }
 }
 
-function initScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, { threshold: 0.1 });
+function loadChat(chat) {
+    const messagesContainer = document.getElementById('messagesContainer');
+    if (!messagesContainer) return;
 
-    document.querySelectorAll('.feature-card').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        observer.observe(el);
-    });
-}
+    messagesContainer.innerHTML = `
+        <div class="message ai-message">
+            <div class="message-avatar"><i class="fas fa-robot"></i></div>
+            <div class="message-content">
+                <p>Hello! I'm your ultimate coding companion. How can I help you today?</p>
+            </div>
+        </div>`;
 
-function initMobileMenu() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.classList.add('message', 'user-message');
+    userMsgDiv.innerHTML = `
+        <div class="message-avatar"><i class="fas fa-user"></i></div>
+        <div class="message-content"><p>${chat.userMsg}</p></div>
+    `;
+    messagesContainer.appendChild(userMsgDiv);
 
-    if(menuToggle && navMenu) {
-        menuToggle.addEventListener('click', () => {
-            menuToggle.classList.toggle('is-active');
-            navMenu.classList.toggle('active');
-        });
+    const aiMsgDiv = document.createElement('div');
+    aiMsgDiv.classList.add('message', 'ai-message');
+    const aiContent = typeof marked !== 'undefined' ? marked.parse(chat.aiMsg) : chat.aiMsg;
+    aiMsgDiv.innerHTML = `
+        <div class="message-avatar"><i class="fas fa-robot"></i></div>
+        <div class="message-content">${aiContent}</div>
+    `;
+    messagesContainer.appendChild(aiMsgDiv);
 
-        document.querySelectorAll('.nav-menu li a').forEach(link => {
-            link.addEventListener('click', () => {
-                menuToggle.classList.remove('is-active');
-                navMenu.classList.remove('active');
-            });
-        });
-    }
-}
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }
