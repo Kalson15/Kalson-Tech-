@@ -33,7 +33,11 @@ body {
     overflow-x: hidden;
     height: 100vh;
 }
+/* Add this to your existing styles.css file to hide the API Settings menu item */
 
+#openSettingsBtn {
+    display: none !important;
+}
 /* Utility Classes */
 .hidden {
     display: none !important;
