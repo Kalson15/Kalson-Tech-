@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalson Tech | Innovate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Syntax Highlighting & Markdown Support -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- LANDING PAGE VIEW -->
+    <div id="landing-view">
+        <nav class="navbar">
+            <div class="container nav-container">
+                <div class="logo">Kal <span class="text-accent">Tech</span></div>
+                <div class="menu-toggle" id="mobile-menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><button class="btn btn-sm btn-primary nav-login-btn" id="navLoginBtn">Log In</button></li>
+                </ul>
+            </div>
+        </nav>
+        <main class="hero-section" id="home">
+            <div class="hero-overlay"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <span class="badge">Your ultimate coding companion</span>
+                    <h1 class="hero-title">Architecting the <br><span class="text-gradient">Digital Future</span></h1>
+                    <p class="hero-description">
+                        Transforming ideas into powerful, scalable, and elegant solutions. 
+                        Join us on a journey to redefine the boundaries of technology.
+                    </p>
+                    <div class="cta-group">
+                    <button class="btn btn-primary" id="exploreBtn">Get started</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <section id="features" class="features hero-section">
+                <div class="contain hero-content">
+                    <span class="badge">Specialized Features</span>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-rocket"></i>
+                            <h3>Fast Performance</h3>
+                            <p>Optimized for speed and efficiency</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Secure & Reliable</h3>
+                            <p>Built with security in mind</p>
+                            
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-code-branch"></i>
+                            <h3>Easy integration</h3>
+                            <p>Seamless integration with available tools and workflows</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <!-- Footer -->
+        <footer>
+            <div class="contain">
+                <p>&copy; 2025 KalTech. All rights reserved.</p>
+                <p>Made by Kalson</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- APP/DASHBOARD VIEW (Hidden by default) -->
+    <div id="dashboard-view" class="hidden">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">Kal <span class="text-accent">Tech</span> <span class="badge-mini">AI</span></div>
+                </div>
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i> New Chat
+                </button>
+                
+                <div class="sidebar-menu">
+                    <div class="menu-label">History</div>
+                    <ul class="history-list" id="chatHistoryList">
+                        <!-- History items populated by JS -->
+                    </ul>
+                    
+                    <div class="menu-label">Settings</div>
+                    <ul class="settings-list">
+                        <li><i class="fas fa-user"></i> Profile</li>
+                        <li><i class="fas fa-cog"></i> Preferences</li>
+                        <li id="openSettingsBtn"><i class="fas fa-key"></i> API Keys</li>
+                    </ul>
+                </div>
+
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name" id="displayUserName">User</span>
+                        <span class="user-plan">Free</span>
+                    </div>
+                    <button id="logoutBtn" class="logout-icon" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </aside>
+
+            <!-- Main Chat Area -->
+            <main class="chat-area">
+                <header class="chat-header">
+                    <!-- New Animated Hamburger for Chat -->
+                    <div class="menu-toggle chat-toggle" id="chatMobileMenu">
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </div>
+                    <div class="chat-model-info">
+                        <span class="model-name">KalTech (v2.0)</span>
+                        <span class="model-status">Online</span>
+                    </div>
+                    <div class="header-actions">
+                        <button class="icon-btn"><i class="far fa-share-square"></i></button>
+                        <button class="icon-btn"><i class="far fa-star"></i></button>
+                    </div>
+                </header>
+
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Welcome Message -->
+                    <div class="message ai-message">
+                        <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="message-content">
+                            <p>Hello! I'm your ultimate coding companion. How can I help you today?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <textarea id="chatInput" placeholder="Type your message here..." rows="1"></textarea>
+                        <button id="sendMessageBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                    <p class="disclaimer">KalTech AI can also make mistakes.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeAuth">&times;</span>
+            
+            <!-- Sign Up Form -->
+            <div id="signupForm" class="auth-form">
+                <h2>Create Account</h2>
+                <p class="subtitle">Join the digital revolution</p>
+                <form id="formSignup">
+                    <div class="input-group">
+                        <input type="text" id="signupName" required placeholder=" ">
+                        <label for="signupName">Full Name</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="signupEmail" required placeholder=" ">
+                        <label for="signupEmail">Email Address</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="signupPassword" required placeholder=" ">
+                        <label for="signupPassword">Password</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                </form>
+                <p class="switch-text">Already have an account? <a href="#" id="showLogin">Log In</a></p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form hidden">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Continue your journey</p>
+                <form id="formLogin">
+                    <div class="input-group">
+                        <input type="email" id="loginEmail" required placeholder=" ">
+                        <label for="loginEmail">Email Address</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="loginPassword" required placeholder=" ">
+                        <label for="loginPassword">Password</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                </form>
+                <p class="switch-text">Don't have an account? <a href="#" id="showSignup">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeSettings">&times;</span>
+            <h2>API Settings</h2>
+            <p class="subtitle">Configure your AI Model Access</p>
+            <form id="apiKeyForm">
+                <div class="input-group">
+                    <input type="password" id="geminiKey" placeholder=" ">
+                    <label for="geminiKey">Gemini API Key</label>
+                </div>
+                <p class="input-hint" style="color: var(--text-muted); font-size: 0.85rem; margin-top: -15px; margin-bottom: 20px; line-height: 1.4;">
+                    Required for <strong>Google Gemini</strong> models.
+                    <br>Key is stored locally in your browser.
+                </p>
+                <button type="submit" class="btn btn-primary btn-block">Save Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden">Authentication Successful</div>
+    <script src="script.js"></script>
+</body>
+</html>
